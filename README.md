@@ -1,9 +1,9 @@
-Objects.h
+Object.h
 ====
 "Objects" in C Language using type "var" like Javascript (not confused with Classes).
 
 ```c
-#include "Objects.h"
+#include "Object.h"
 
 int main(int args, const char* argv[]){
 
