@@ -6,9 +6,12 @@ Objects.h
 #include "Objects.h"
 
 int main(int args, const char* argv[]){
+
     var myObj = ObjectCreate("myObj"); /* => Setting the key 'myObj' */
+
     myObj->setString(myObj, "Hello World"); /* => like, myObj: "Hello World" */
     const char* myval = myObj->getString(myObj); /* => "Hello World" */
+
     return 0;
 }
 ```
@@ -59,7 +62,7 @@ var found = myParent->find(myParent, "child3"); /* find using the key setted in 
 ```
 
 Using test functions:
-```
+```c
 if(!isUndefined(myParent)){
     /* ... */
     if(hasChild(myParent, "child3")){
