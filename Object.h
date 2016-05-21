@@ -14,7 +14,6 @@ typedef enum{
     ArrayOfNumber_,
     ArrayOfString_,
     ArrayOfBoolean_,
-    ArrayOfObject_,
     Undefined_
 } Type;
 
@@ -32,23 +31,22 @@ typedef struct Object{
     /* getters */
     const char*(*getKey)(Object*);
     int(*getType)(Object*);
-    int(*getValue_Number)(Object*);
-    const char*(*getValue_String)(Object*);
-    bool(*getValue_Boolean)(Object*);
-    Object*(*getValue_Object)(Object*);
-    int*(*getValue_ArrayOfNumber)(Object*);
-    const char**(*getValue_ArrayOfString)(Object*);
-    Object**(*getValue_ArrayOfObject)(Object*);
+    int(*getNumber)(Object*);
+    const char*(*getString)(Object*);
+    bool(*getBoolean)(Object*);
+    Object*(*getChild)(Object*);
+    int*(*getArrayOfNumber)(Object*);
+    const char**(*getArrayOfString)(Object*);
 
 
     /* setter */
-    Object*(*setValue_Number)(Object*, int);
-    Object*(*setValue_String)(Object*, const char*);
-    Object*(*setValue_Boolean)(Object*, bool);
-    Object*(*setValue_Object)(Object*, Object*);
-    Object*(*setValue_ArrayOfNumber)(Object*, int*);
-    Object*(*setValue_ArrayOfString)(Object*, const char**);
-    Object*(*setValue_ArrayOfObject)(Object*, Object**);
+    Object*(*setNumber)(Object*, int);
+    Object*(*setString)(Object*, const char*);
+    Object*(*setBoolean)(Object*, bool);
+    Object*(*setChild)(Object*, Object*);
+    Object*(*appendChild)(Object*, Object*);
+    Object*(*setArrayOfNumber)(Object*, int*);
+    Object*(*setArrayOfString)(Object*, const char**);
     Object*(*setNext)(Object*, Object*);
     Object*(*find)(Object*, const char*);
     Object*(*removeChild)(Object*, const char*);
@@ -79,50 +77,43 @@ const char* getTypeStr(var self){
             return "Array Of String";
         case ArrayOfBoolean_:
             return "Array Of Boolean";
-        case ArrayOfObject_:
-            return "Array Of Object";
     }
     return "Undefined";
 }
 
 /* SETTERS */
 
-var __setValue_Number__(var self, int value){
+var __setNumber__(var self, int value){
     self->type = Number_;
     self->value = (void*)value;
 }
 
-var __setValue_String__(var self, const char* value){
+var __setString__(var self, const char* value){
     self->type = String_;
     self->value = (void*)value;
     return self;
 }
-var __setValue_Boolean__(var self, bool value){
+var __setBoolean__(var self, bool value){
     self->type = Boolean_;
     self->value = (void*)value;
     return self;
 }
-var __setValue_Object__(var self, var value){
+var __setChild__(var self, var value){
     self->type = Object_;
     self->value = (void*)value;
     return self;
 }
-var __setValue_ArrayOfNumber__(var self, int* value){
+
+var __setArrayOfNumber__(var self, int* value){
     self->type = ArrayOfNumber_;
     self->value = (void*)value;
     return self;
 }
-var __setValue_ArrayOfString__(var self, const char** value){
+var __setArrayOfString__(var self, const char** value){
     self->type = ArrayOfString_;
     self->value = (void*)value;
     return self;
 }
-var __setValue_ArrayOfObject__(var self, var* value){
-    self->type = ArrayOfObject_;
-    self->value = (void*)value;
-    return self;
-}
-
 var __setNext__(var self, var thenext){
     self->next = thenext;
     return thenext;
@@ -130,28 +121,26 @@ var __setNext__(var self, var thenext){
 /* Gettets */
 
 
-int __getValue_Number__(var self){
+int __getNumber__(var self){
     return (int)self->value;
 }
 
-const char* __getValue_String__(var self){
+const char* __getString__(var self){
     return (const char*)self->value;
 }
-bool __getValue_Boolean__(var self){
+bool __getBoolean__(var self){
     return (bool)self->value;
 }
-var __getValue_Object__(var self){
+var __getChild__(var self){
     return (var)self->value;
 }
-int* __getValue_ArrayOfNumber__(var self){
+int* __getArrayOfNumber__(var self){
     return (int*)self->value;
 }
-const char** __getValue_ArrayOfString__(var self){
+const char** __getArrayOfString__(var self){
     return (const char**)self->value;
 }
-var* __getValue_ArrayOfObject__(var self){
-    return (var*)self->value;
-}
+
 
 var __removeChild__(var self, const char* key){
     var aux = (var)self->value;
@@ -214,7 +203,7 @@ bool isObject(var self){
     return false;
 }
 bool isArray(var self){
-    if(self->type == ArrayOfNumber_ || self->type == ArrayOfString_ || self->type == ArrayOfObject_){
+    if(self->type == ArrayOfNumber_ || self->type == ArrayOfString_){
         return true;
     }
     return false;
@@ -231,12 +220,6 @@ bool isArrayOfString(var self){
     }
     return false;
 }
-bool isArrayOfObject(var self){
-    if(self->type ==ArrayOfObject_){
-        return true;
-    }
-    return false;
-}
 
 bool isUndefined(Object *self){
     if(self->type == Undefined_){
@@ -245,8 +228,35 @@ bool isUndefined(Object *self){
     return false;
 }
 
+var __appendChild__(var self, var value){
+    if(isObject(self)){
+        var first = self->getChild(self);
+        value->next = first;
+        self->setChild(self, value);
+    }
+    return self;
+}
+
+void freeObject(var self){
+    if(!isObject(self)){
+        free(self);
+    }
+    else{
+        var supr = self->getChild(self);
+        while(supr != NULL){
+            if(supr->next == NULL){
+                free(supr);
+                break;
+            }
+            var temp = supr;
+            supr = supr->next;
+            free(temp);
+        }
+        free(self);
+    }
+}
 // like => new Object();
-var Object_Create(const char* key){
+var ObjectCreate(const char* key){
     var self = (var)malloc(sizeof(Object));
     self->key = key;
     self->value = NULL;
@@ -256,22 +266,21 @@ var Object_Create(const char* key){
     self->getKey = __getKey__;
     self->getType = __getType__;
 
-    self->setValue_Number = __setValue_Number__;
-    self->setValue_String = __setValue_String__;
-    self->setValue_Boolean = __setValue_Boolean__;
-    self->setValue_Object = __setValue_Object__;
-    self->setValue_ArrayOfNumber = __setValue_ArrayOfNumber__;
-    self->setValue_ArrayOfString = __setValue_ArrayOfString__;
-    self->setValue_ArrayOfObject = __setValue_ArrayOfObject__;
+    self->setNumber = __setNumber__;
+    self->setString = __setString__;
+    self->setBoolean = __setBoolean__;
+    self->setChild = __setChild__;
+    self->appendChild = __appendChild__;
+    self->setArrayOfNumber = __setArrayOfNumber__;
+    self->setArrayOfString = __setArrayOfString__;
     self->setNext = __setNext__;
 
-    self->getValue_Number = __getValue_Number__;
-    self->getValue_String = __getValue_String__;
-    self->getValue_Boolean = __getValue_Boolean__;
-    self->getValue_Object = __getValue_Object__;
-    self->getValue_ArrayOfNumber = __getValue_ArrayOfNumber__;
-    self->getValue_ArrayOfString = __getValue_ArrayOfString__;
-    self->getValue_ArrayOfObject = __getValue_ArrayOfObject__;
+    self->getNumber = __getNumber__;
+    self->getString = __getString__;
+    self->getBoolean = __getBoolean__;
+    self->getChild = __getChild__;
+    self->getArrayOfNumber = __getArrayOfNumber__;
+    self->getArrayOfString = __getArrayOfString__;
 
     self->find = __find__;
     self->removeChild = __removeChild__;

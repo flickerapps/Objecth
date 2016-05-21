@@ -1,19 +1,20 @@
-#include "include/Object.h"
+#include "../Object.h"
 
 int main(int args, const char* argv[]){
-    var myobj = Object_Create("myobj");
     int nums[] = {3,2,3};
     int nums2[] = {1,8,1};
-    myobj
-    ->setValue_ArrayOfNumber(myobj,nums)
-    ->setValue_ArrayOfNumber(myobj,nums2); // Overwriting setter above
+    var myobj = ObjectCreate("myobj");
+    myobj->setArrayOfNumber(myobj,nums)
+    ->setArrayOfNumber(myobj,nums2); // Overwriting setter above
     if(isUndefined(myobj)){
         printf("Undefined Object\n");
     }
     else{
         printf("Type: %s\n",getTypeStr(myobj));
-        int mynum = myobj->getValue_ArrayOfNumber(myobj)[1];
+        int mynum = myobj->getArrayOfNumber(myobj)[1];
         printf("%d\n", mynum);
     }
+
+    freeObject(myobj);
     return 0;
 }
