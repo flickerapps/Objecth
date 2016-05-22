@@ -75,4 +75,4 @@ if(!isUndefined(myParent)){
 ```
 License
 ====
-[LICENSE](LICENSE)
+[MIT](LICENSE)
