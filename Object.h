@@ -1,5 +1,5 @@
-#ifndef OBJECTH
-#define OBJECTH
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +40,7 @@ typedef struct Object{
 
 
     /* setter */
+    Object*(*setType)(Object*, Type);
     Object*(*setNumber)(Object*, int);
     Object*(*setString)(Object*, const char*);
     Object*(*setBoolean)(Object*, bool);
@@ -81,10 +82,24 @@ const char* getTypeStr(var self){
     return "Undefined";
 }
 
+bool Objexists(var self){
+    return (self == NULL) ? false : true;
+}
+
+
 /* SETTERS */
 
+
+var __setType__(var self, Type aType){
+    if(Objexists(self)){
+        self->type = aType;
+    }
+    return self;
+}
 var __setValue__(var self, void* value){
-    self->value = value;
+    if(Objexists(self)){
+        self->value = value;
+    }
     /*
      * Examples:
      * setValue(obj, (void*) 3);
@@ -95,39 +110,53 @@ var __setValue__(var self, void* value){
 
 }
 var __setNumber__(var self, int value){
-    self->type = NUMBER;
-    self->value = (void*)value;
+    if(Objexists(self)){
+        self->type = NUMBER;
+        self->value = (void*)value;
+    }
     return self;
 }
 
 var __setString__(var self, const char* value){
-    self->type = STRING;
-    self->value = (void*)value;
+    if(Objexists(self)){
+        self->type = STRING;
+        self->value = (void*)value;
+    }
     return self;
 }
 var __setBoolean__(var self, bool value){
-    self->type = BOOLEAN;
-    self->value = (void*)value;
+    if(Objexists(self)){
+        self->type = BOOLEAN;
+        self->value = (void*)value;
+    }
     return self;
 }
 var __setChild__(var self, var value){
-    self->type = OBJECT;
-    self->value = (void*)value;
+    if(Objexists(self)){
+        self->type = OBJECT;
+        self->value = (void*)value;
+    }
     return self;
 }
 
 var __setArrayOfNumber__(var self, int* value){
-    self->type = ARRAYOFNUMBER;
-    self->value = (void*)value;
+    if(Objexists(self)){
+        self->type = ARRAYOFNUMBER;
+        self->value = (void*)value;
+    }
     return self;
 }
 var __setArrayOfString__(var self, const char** value){
-    self->type = ARRAYOFSTRING;
-    self->value = (void*)value;
+    if(Objexists(self)){
+        self->type = ARRAYOFSTRING;
+        self->value = (void*)value;
+    }
     return self;
 }
 var __setNext__(var self, var thenext){
-    self->next = thenext;
+    if(Objexists(self)){
+        self->next = thenext;
+    }
     return thenext;
 }
 /* Gettets */
@@ -164,36 +193,43 @@ const char** __getArrayOfString__(var self){
 
 
 var __removeChild__(var self, const char* key){
-    var aux = (var)self->value;
-    while(aux != NULL){
-        if(strcmp(aux->key,key) == 0){
-            var temp = aux;
+    if(Objexists(self)){
+        var aux = (var)self->value;
+        while(aux != NULL){
+            if(strcmp(aux->key,key) == 0){
+                var temp = aux;
+                aux = aux->next;
+                free(temp);
+                break;
+            }
             aux = aux->next;
-            free(temp);
-            break;
         }
-        aux = aux->next;
     }
     return self;
 }
 var __find__(var self, const char* key){
-    var aux = (var)self->value;
-    while(aux != NULL){
-        if(strcmp(aux->key,key) == 0){
-            break;
+    if(Objexists(self)){
+        var aux = (var)self->value;
+        while(aux != NULL){
+            if(strcmp(aux->key,key) == 0){
+                break;
+            }
+            aux = aux->next;
         }
-        aux = aux->next;
+        return aux;
     }
-    return aux;
+    return NULL;
 }
 
 bool hasChild(var self, const char* key){
-    var aux = (var)self->value;
-    while(aux != NULL){
-        if(strcmp(aux->key,key) == 0){
-            return true;
+    if(Objexists(self)){
+        var aux = (var)self->value;
+        while(aux != NULL){
+            if(strcmp(aux->key,key) == 0){
+                return true;
+            }
+            aux = aux->next;
         }
-        aux = aux->next;
     }
     return false;
 }
@@ -229,13 +265,13 @@ bool isArray(var self){
     }
     return false;
 }
-bool isARRAYOFNUMBER(var self){
+bool isArrayOfNumber(var self){
     if(self->type == ARRAYOFNUMBER){
         return true;
     }
     return false;
 }
-bool isARRAYOFSTRING(var self){
+bool isArrayOfString(var self){
     if(self->type == ARRAYOFSTRING){
         return true;
     }
@@ -250,31 +286,38 @@ bool isUndefined(Object *self){
 }
 
 var __appendChild__(var self, var value){
-    if(isObject(self)){
-        var first = self->getChild(self);
-        value->next = first;
-        self->setChild(self, value);
+    if(Objexists(self)){
+        if(isObject(self)){
+            var first = self->getChild(self);
+            value->next = first;
+            self->setChild(self, value);
+        }
     }
     return self;
 }
 
-void freeObject(var self){
-    if(!isObject(self)){
-        free(self);
-    }
-    else{
-        var supr = self->getChild(self);
-        while(supr != NULL){
-            if(supr->next == NULL){
-                free(supr);
-                break;
-            }
-            var temp = supr;
-            supr = supr->next;
-            free(temp);
+int freeObject(var self){
+    if(Objexists(self)){
+        if(!isObject(self)){
+            free(self);
+            return 1;
         }
-        free(self);
+        else{
+            var supr = self->getChild(self);
+            while(supr != NULL){
+                if(supr->next == NULL){
+                    free(supr);
+                    break;
+                }
+                var temp = supr;
+                supr = supr->next;
+                free(temp);
+            }
+            free(self);
+            return 2;
+        }
     }
+    return 0;
 }
 // like => new Object();
 var ObjectCreate(const char* key){
@@ -287,6 +330,7 @@ var ObjectCreate(const char* key){
     self->getKey = __getKey__;
     self->getType = __getType__;
 
+    self->setType = __setType__;
     self->setNumber = __setNumber__;
     self->setString = __setString__;
     self->setBoolean = __setBoolean__;
