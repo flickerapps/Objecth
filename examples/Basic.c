@@ -1,4 +1,6 @@
 #include "../Object.h"
+#include <stdio.h>
+
 
 int main(int args, const char* argv[]){
     int nums[] = {3,2,3};

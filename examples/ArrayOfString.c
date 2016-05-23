@@ -1,4 +1,5 @@
 #include "../Object.h"
+#include <stdio.h>
 
 int main(int args, const char* argv[]){
     const char* movies[4] = {

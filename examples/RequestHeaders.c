@@ -1,4 +1,5 @@
 #include "../Object.h"
+#include <stdio.h>
 
 
 var Headers(){
@@ -39,7 +40,6 @@ const char* getContent_Type(var self){
 int main(int argc, char const *argv[])
 {
     var headers = Headers();
-    var contype = headers->getChild(headers);
     setContent_Type(headers, "application/json");
     printf("Content-Type: %s\n", getContent_Type(headers));
     freeObject(headers);
