@@ -1,19 +1,19 @@
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef OBJECTH
+#define OBJECTH
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
 typedef enum{
-    Number_ = 1,
-    String_,
-    Boolean_,
-    Object_,
-    ArrayOfNumber_,
-    ArrayOfString_,
-    ArrayOfBoolean_,
-    Undefined_
+    NUMBER = 1,
+    STRING,
+    BOOLEAN,
+    OBJECT,
+    ARRAYOFNUMBER,
+    ARRAYOFSTRING,
+    ARRAYOFBOOLEAN,
+    UNDEFINED
 } Type;
 
 //Class Object ( omg!! )
@@ -65,17 +65,17 @@ int __getType__(var self){
 
 const char* getTypeStr(var self){
     switch(self->type){
-        case Number_:
+        case NUMBER:
             return "Number";
-        case String_:
+        case STRING:
             return "String";
-        case Object_:
+        case OBJECT:
             return "Object";
-        case ArrayOfNumber_:
+        case ARRAYOFNUMBER:
             return "Array Of Number";
-        case ArrayOfString_:
+        case ARRAYOFSTRING:
             return "Array Of String";
-        case ArrayOfBoolean_:
+        case ARRAYOFBOOLEAN:
             return "Array Of Boolean";
     }
     return "Undefined";
@@ -83,34 +83,46 @@ const char* getTypeStr(var self){
 
 /* SETTERS */
 
+var __setValue__(var self, void* value){
+    self->value = value;
+    /*
+     * Examples:
+     * setValue(obj, (void*) 3);
+     * setValue(obj, (void*) "Hello!");
+     * setValue(obj, (void*) true);
+    */
+    return self;
+
+}
 var __setNumber__(var self, int value){
-    self->type = Number_;
+    self->type = NUMBER;
     self->value = (void*)value;
+    return self;
 }
 
 var __setString__(var self, const char* value){
-    self->type = String_;
+    self->type = STRING;
     self->value = (void*)value;
     return self;
 }
 var __setBoolean__(var self, bool value){
-    self->type = Boolean_;
+    self->type = BOOLEAN;
     self->value = (void*)value;
     return self;
 }
 var __setChild__(var self, var value){
-    self->type = Object_;
+    self->type = OBJECT;
     self->value = (void*)value;
     return self;
 }
 
 var __setArrayOfNumber__(var self, int* value){
-    self->type = ArrayOfNumber_;
+    self->type = ARRAYOFNUMBER;
     self->value = (void*)value;
     return self;
 }
 var __setArrayOfString__(var self, const char** value){
-    self->type = ArrayOfString_;
+    self->type = ARRAYOFSTRING;
     self->value = (void*)value;
     return self;
 }
@@ -121,6 +133,12 @@ var __setNext__(var self, var thenext){
 /* Gettets */
 
 void* __getValue__(var self){
+    /*
+     * Examples:
+     * (int)getValue(obj);
+     * (const char*)getValue(obj);
+     * (bool)getValue(obj);
+    */
     return self->value;
 }
 
@@ -182,50 +200,50 @@ bool hasChild(var self, const char* key){
 /* Evaluators */
 
 bool isNumber(var self){
-    if(self->type == Number_){
+    if(self->type == NUMBER){
         return true;
     }
     return false;
 }
 bool isString(var self){
-    if(self->type == String_){
+    if(self->type == STRING){
         return true;
     }
     return false;
 }
 bool isBoolean(var self){
-    if(self->type == Boolean_){
+    if(self->type == BOOLEAN){
         return true;
     }
     return false;
 }
 bool isObject(var self){
-    if(self->type == Object_){
+    if(self->type == OBJECT){
         return true;
     }
     return false;
 }
 bool isArray(var self){
-    if(self->type == ArrayOfNumber_ || self->type == ArrayOfString_){
+    if(self->type == ARRAYOFNUMBER || self->type == ARRAYOFSTRING){
         return true;
     }
     return false;
 }
-bool isArrayOfNumber(var self){
-    if(self->type == ArrayOfNumber_){
+bool isARRAYOFNUMBER(var self){
+    if(self->type == ARRAYOFNUMBER){
         return true;
     }
     return false;
 }
-bool isArrayOfString(var self){
-    if(self->type == ArrayOfString_){
+bool isARRAYOFSTRING(var self){
+    if(self->type == ARRAYOFSTRING){
         return true;
     }
     return false;
 }
 
 bool isUndefined(Object *self){
-    if(self == NULL || self->key == NULL || self->type == Undefined_ ){
+    if(self == NULL || self->key == NULL || self->type == UNDEFINED ){
         return true;
     }
     return false;
@@ -263,7 +281,7 @@ var ObjectCreate(const char* key){
     var self = (var)calloc(1,sizeof(Object));
     self->key = key;
     self->value = NULL;
-    self->type = Undefined_;
+    self->type = UNDEFINED;
     self->next = NULL;
 
     self->getKey = __getKey__;
