@@ -30,6 +30,7 @@ typedef struct Object{
     /* getters */
     const char*(*getKey)(Object*);
     int(*getType)(Object*);
+    void*(*getValue)(Object*); /* generic */
     int(*getNumber)(Object*);
     const char*(*getString)(Object*);
     bool(*getBoolean)(Object*);
@@ -119,6 +120,9 @@ var __setNext__(var self, var thenext){
 }
 /* Gettets */
 
+void* __getValue__(var self){
+    return self->value;
+}
 
 int __getNumber__(var self){
     return (int)self->value;
@@ -221,7 +225,7 @@ bool isArrayOfString(var self){
 }
 
 bool isUndefined(Object *self){
-    if(self->type == Undefined_){
+    if(self == NULL || self->key == NULL || self->type == Undefined_ ){
         return true;
     }
     return false;
@@ -256,7 +260,7 @@ void freeObject(var self){
 }
 // like => new Object();
 var ObjectCreate(const char* key){
-    var self = (var)malloc(sizeof(Object));
+    var self = (var)calloc(1,sizeof(Object));
     self->key = key;
     self->value = NULL;
     self->type = Undefined_;
@@ -274,6 +278,7 @@ var ObjectCreate(const char* key){
     self->setArrayOfString = __setArrayOfString__;
     self->setNext = __setNext__;
 
+    self->getValue = __getValue__;
     self->getNumber = __getNumber__;
     self->getString = __getString__;
     self->getBoolean = __getBoolean__;
