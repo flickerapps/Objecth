@@ -1,3 +1,11 @@
+/*
+    Name: Object.h
+    Description: "Objects" in C Language using type "var" like Javascript
+    URL: https://github.com/flickerapps/Objecth
+    Author: Christopher Ventura <chrisventjs@gmail.com>
+    Author URL: http://github.com/flickerapps
+*/
+
 #ifndef OBJECT_H
 #define OBJECT_H
 
