@@ -3,9 +3,9 @@
 
 
 int main(int args, const char* argv[]){
-    var parent = ObjectCreate("myparent");
-    var children1 = ObjectCreate("mychild1");
-    var children2 = ObjectCreate("mychild2");
+    var parent = ObjectCreate((char*)"myparent");
+    var children1 = ObjectCreate((char*)"mychild1");
+    var children2 = ObjectCreate((char*)"mychild2");
 
     children1->setNumber(children1, 29);
     children2->setNumber(children2, 45);

@@ -8,8 +8,8 @@ int main(int args, const char* argv[]){
         "Deadpool",
         "X-men: Apocalipsis"
     };
-    var myobj = ObjectCreate("mymovies");
-    myobj->setArrayOfString(myobj,movies);
+    var myobj = ObjectCreate((char*)"mymovies");
+    myobj->setArrayOfString(myobj,(char**)movies);
     if(isUndefined(myobj)){
         printf("Undefined Object\n");
     }

@@ -5,7 +5,7 @@
 int main(int args, const char* argv[]){
     int nums[] = {3,2,3};
     int nums2[] = {1,8,1};
-    var myobj = ObjectCreate("myobj");
+    var myobj = ObjectCreate((char*)"myobj");
     myobj->setArrayOfNumber(myobj,nums)
     ->setArrayOfNumber(myobj,nums2); // Overwriting setter above
     if(isUndefined(myobj)){
