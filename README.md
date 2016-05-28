@@ -7,9 +7,9 @@ Object.h
 
 int main(int args, const char* argv[]){
 
-    var myObj = ObjectCreate("myObj"); /* => Setting the key 'myObj' */
+    var myObj = ObjectCreate((char*)"myObj"); /* => Setting the key 'myObj' */
 
-    myObj->setString(myObj, "Hello World"); /* => like, myObj: "Hello World" */
+    myObj->setString(myObj, (char*)"Hello World"); /* => like, myObj: "Hello World" */
     const char* myval = myObj->getString(myObj); /* => "Hello World" */
 
     return 0;
@@ -18,7 +18,7 @@ int main(int args, const char* argv[]){
 
 You can change the type of object value:
 ```c
-myObj   ->setString(myObj, "Foo") /* type: String */
+myObj   ->setString(myObj, (char*)"Foo") /* type: String */
         ->setNumber(myObj, 3445); /* now, type: Number */
 ```
 
@@ -35,8 +35,8 @@ Supported Types:
 
 You can set childs to your object:
 ```c
-var myParent = ObjectCreate("Parent");
-var myChild = ObjectCreate("Child");
+var myParent = ObjectCreate((char*)"Parent");
+var myChild = ObjectCreate((char*)"Child");
 
 myParent->setChild(myParent, myChild); /* args: 'to' myParent, 'from' myChild */
 
@@ -52,7 +52,7 @@ var myParent = ...
 
 var myChild1 = ...
 var myChild2 = ...
-var myChild3 = ObjectCreate("child3");
+var myChild3 = ObjectCreate((char*)"child3");
 
 myParent->setChild(myParent, myChild1);
 myParent->appendChild(myParent, myChild2); /* or using `setNext()` in myChild1 */
@@ -65,7 +65,7 @@ Using test functions:
 ```c
 if(!isUndefined(myParent)){
     /* ... */
-    if(hasChild(myParent, "child3")){
+    if(hasChild(myParent, (char*)"child3")){
         /* ... */
         if(isString(myChild3)){
             /* ... */

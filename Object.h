@@ -28,7 +28,7 @@ typedef enum{
 typedef struct Object{
 
     // attrs
-    const char* key;
+    char* key;
     void* value;
     Type type;
     Object* next;
@@ -36,35 +36,40 @@ typedef struct Object{
     // methods
 
     /* getters */
-    const char*(*getKey)(Object*);
+    char*(*getKey)(Object*);
     int(*getType)(Object*);
     void*(*getValue)(Object*); /* generic */
     int(*getNumber)(Object*);
-    const char*(*getString)(Object*);
+    char*(*getString)(Object*);
     bool(*getBoolean)(Object*);
     Object*(*getChild)(Object*);
     int*(*getArrayOfNumber)(Object*);
-    const char**(*getArrayOfString)(Object*);
+    char**(*getArrayOfString)(Object*);
 
 
     /* setter */
     Object*(*setType)(Object*, Type);
     Object*(*setNumber)(Object*, int);
-    Object*(*setString)(Object*, const char*);
+    Object*(*setString)(Object*, char*);
     Object*(*setBoolean)(Object*, bool);
     Object*(*setChild)(Object*, Object*);
     Object*(*appendChild)(Object*, Object*);
     Object*(*setArrayOfNumber)(Object*, int*);
-    Object*(*setArrayOfString)(Object*, const char**);
+    Object*(*setArrayOfString)(Object*, char**);
     Object*(*setNext)(Object*, Object*);
-    Object*(*find)(Object*, const char*);
-    Object*(*removeChild)(Object*, const char*);
+    Object*(*find)(Object*, char*);
+    Object*(*removeChild)(Object*, char*);
 
 } Object;
 
 typedef Object* var;
 
-const char* __getKey__(var self){
+
+
+/* Prototypes */
+
+/* -----  */
+char* __getKey__(var self){
     return self->key;
 }
 int __getType__(var self){
@@ -72,22 +77,22 @@ int __getType__(var self){
 }
 
 
-const char* getTypeStr(var self){
+char* getTypeStr(var self){
     switch(self->type){
         case NUMBER:
-            return "Number";
+            return (char*)"Number";
         case STRING:
-            return "String";
+            return (char*)"String";
         case OBJECT:
-            return "Object";
+            return (char*)"Object";
         case ARRAYOFNUMBER:
-            return "Array Of Number";
+            return (char*)"Array Of Number";
         case ARRAYOFSTRING:
-            return "Array Of String";
+            return (char*)"Array Of String";
         case ARRAYOFBOOLEAN:
-            return "Array Of Boolean";
+            return (char*)"Array Of Boolean";
     }
-    return "Undefined";
+    return (char*)"Undefined";
 }
 
 bool Objexists(var self){
@@ -125,7 +130,7 @@ var __setNumber__(var self, int value){
     return self;
 }
 
-var __setString__(var self, const char* value){
+var __setString__(var self, char* value){
     if(Objexists(self)){
         self->type = STRING;
         self->value = (void*)value;
@@ -154,7 +159,7 @@ var __setArrayOfNumber__(var self, int* value){
     }
     return self;
 }
-var __setArrayOfString__(var self, const char** value){
+var __setArrayOfString__(var self, char** value){
     if(Objexists(self)){
         self->type = ARRAYOFSTRING;
         self->value = (void*)value;
@@ -173,7 +178,7 @@ void* __getValue__(var self){
     /*
      * Examples:
      * (int)getValue(obj);
-     * (const char*)getValue(obj);
+     * (char*)getValue(obj);
      * (bool)getValue(obj);
     */
     return self->value;
@@ -183,8 +188,8 @@ int __getNumber__(var self){
     return (int)self->value;
 }
 
-const char* __getString__(var self){
-    return (const char*)self->value;
+char* __getString__(var self){
+    return (char*)self->value;
 }
 bool __getBoolean__(var self){
     return (bool)self->value;
@@ -195,12 +200,12 @@ var __getChild__(var self){
 int* __getArrayOfNumber__(var self){
     return (int*)self->value;
 }
-const char** __getArrayOfString__(var self){
-    return (const char**)self->value;
+char** __getArrayOfString__(var self){
+    return (char**)self->value;
 }
 
 
-var __removeChild__(var self, const char* key){
+var __removeChild__(var self, char* key){
     if(Objexists(self)){
         var aux = (var)self->value;
         while(aux != NULL){
@@ -215,7 +220,7 @@ var __removeChild__(var self, const char* key){
     }
     return self;
 }
-var __find__(var self, const char* key){
+var __find__(var self, char* key){
     if(Objexists(self)){
         var aux = (var)self->value;
         while(aux != NULL){
@@ -229,7 +234,7 @@ var __find__(var self, const char* key){
     return NULL;
 }
 
-bool hasChild(var self, const char* key){
+bool hasChild(var self, char* key){
     if(Objexists(self)){
         var aux = (var)self->value;
         while(aux != NULL){
@@ -328,7 +333,7 @@ int freeObject(var self){
     return 0;
 }
 // like => new Object();
-var ObjectCreate(const char* key){
+var ObjectCreate(char* key){
     var self = (var)calloc(1,sizeof(Object));
     self->key = key;
     self->value = NULL;
