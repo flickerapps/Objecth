@@ -25,44 +25,44 @@ typedef enum{
 } Type;
 
 //Class Object ( omg!! )
-typedef struct Object{
+struct Object{
 
     // attrs
     char* key;
     void* value;
     Type type;
-    Object* next;
+    struct Object* next;
 
     // methods
 
     /* getters */
-    char*(*getKey)(Object*);
-    int(*getType)(Object*);
-    void*(*getValue)(Object*); /* generic */
-    int(*getNumber)(Object*);
-    char*(*getString)(Object*);
-    bool(*getBoolean)(Object*);
-    Object*(*getChild)(Object*);
-    int*(*getArrayOfNumber)(Object*);
-    char**(*getArrayOfString)(Object*);
+    char*(*getKey)(struct Object*);
+    int(*getType)(struct Object*);
+    void*(*getValue)(struct Object*); /* generic */
+    int(*getNumber)(struct Object*);
+    char*(*getString)(struct Object*);
+    bool(*getBoolean)(struct Object*);
+    struct Object*(*getChild)(struct Object*);
+    int*(*getArrayOfNumber)(struct Object*);
+    char**(*getArrayOfString)(struct Object*);
 
 
     /* setter */
-    Object*(*setType)(Object*, Type);
-    Object*(*setNumber)(Object*, int);
-    Object*(*setString)(Object*, char*);
-    Object*(*setBoolean)(Object*, bool);
-    Object*(*setChild)(Object*, Object*);
-    Object*(*appendChild)(Object*, Object*);
-    Object*(*setArrayOfNumber)(Object*, int*);
-    Object*(*setArrayOfString)(Object*, char**);
-    Object*(*setNext)(Object*, Object*);
-    Object*(*find)(Object*, char*);
-    Object*(*removeChild)(Object*, char*);
+    struct Object*(*setType)(struct Object*, Type);
+    struct Object*(*setNumber)(struct Object*, int);
+    struct Object*(*setString)(struct Object*, char*);
+    struct Object*(*setBoolean)(struct Object*, bool);
+    struct Object*(*setChild)(struct Object*, struct Object*);
+    struct Object*(*appendChild)(struct Object*, struct Object*);
+    struct Object*(*setArrayOfNumber)(struct Object*, int*);
+    struct Object*(*setArrayOfString)(struct Object*, char**);
+    struct Object*(*setNext)(struct Object*, struct Object*);
+    struct Object*(*find)(struct Object*, char*);
+    struct Object*(*removeChild)(struct Object*, char*);
 
-} Object;
+};
 
-typedef Object* var;
+typedef struct Object* var;
 
 
 
@@ -291,7 +291,7 @@ bool isArrayOfString(var self){
     return false;
 }
 
-bool isUndefined(Object *self){
+bool isUndefined(var self){
     if(self == NULL || self->key == NULL || self->type == UNDEFINED ){
         return true;
     }
@@ -334,7 +334,7 @@ int freeObject(var self){
 }
 // like => new Object();
 var ObjectCreate(char* key){
-    var self = (var)calloc(1,sizeof(Object));
+    var self = (var)calloc(1,sizeof(struct Object));
     self->key = key;
     self->value = NULL;
     self->type = UNDEFINED;
